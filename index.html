@@ -223,6 +223,31 @@ a.btn { display: inline-block; text-decoration: none; }
 .top-meta button { background: none; border: 1px solid rgba(255,255,255,.4); color: var(--forest-ink); border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: .8rem; }
 .banner.err { border-color: var(--bad); background: transparent; color: var(--forest-ink); }
 .drop { display: block; }
+/* Explorador a correr enquanto as contas carregam */
+.loader { background: var(--forest); color: var(--forest-ink); border-top: 1px solid rgba(255,255,255,.08); }
+.loader-in { display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap; padding-block: 6px 10px; }
+.scene { position: relative; width: 260px; max-width: 100%; height: 84px; overflow: hidden; flex: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); }
+.scene .far, .scene .pines { position: absolute; left: 0; right: 0; bottom: 8px; background-repeat: repeat-x; }
+.scene .far { height: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 40'%3E%3Cpath d='M0 40 Q35 12 70 30 T140 26 L140 40 Z' fill='white' fill-opacity='.05'/%3E%3C/svg%3E"); background-size: 140px 40px; animation: scroll140 6s linear infinite; }
+.scene .pines { height: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 40'%3E%3Cpath d='M20 4 L30 22 L25 22 L33 36 L7 36 L15 22 L10 22 Z' fill='white' fill-opacity='.16'/%3E%3Cpath d='M66 14 L73 26 L70 26 L76 36 L56 36 L62 26 L59 26 Z' fill='white' fill-opacity='.1'/%3E%3C/svg%3E"); background-size: 76px 34px; animation: scroll76 1.9s linear infinite; }
+.scene .trail { position: absolute; left: 0; right: 0; bottom: 6px; height: 3px; background: repeating-linear-gradient(90deg, var(--amber) 0 12px, transparent 12px 24px); animation: scroll24 .4s linear infinite; }
+.scene .scout { position: absolute; left: 92px; bottom: 3px; width: 74px; height: 74px; overflow: visible; }
+.scout .leg, .scout .arm { transform-box: fill-box; transform-origin: 50% 2px; }
+.scout .l1, .scout .a2 { animation: swingA .4s ease-in-out infinite alternate; }
+.scout .l2, .scout .a1 { animation: swingB .4s ease-in-out infinite alternate; }
+.scout .bob { animation: bob .2s ease-in-out infinite alternate; }
+.scout .dust { animation: dust .8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes swingA { from { transform: rotate(38deg); } to { transform: rotate(-38deg); } }
+@keyframes swingB { from { transform: rotate(-38deg); } to { transform: rotate(38deg); } }
+@keyframes bob { from { transform: translateY(0); } to { transform: translateY(-2.5px); } }
+@keyframes dust { from { opacity: .6; transform: translateX(0) scale(.6); } to { opacity: 0; transform: translateX(-14px) scale(1.4); } }
+@keyframes scroll24 { to { background-position: -24px 0; } }
+@keyframes scroll76 { to { background-position: -76px 0; } }
+@keyframes scroll140 { to { background-position: -140px 0; } }
+.loader-txt b { display: block; font-family: var(--f-display); font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; }
+.loader-txt span { font-size: .85rem; opacity: .8; }
+@media (prefers-reduced-motion: reduce) { .scene *, .scout * { animation: none !important; } }
 header.top .wrap { position: relative; }
 .tes-top { position: absolute; top: -12px; right: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.1); color: var(--forest-ink); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: .82rem; cursor: pointer; backdrop-filter: blur(2px); }
 .tes-top:hover { background: rgba(255,255,255,.18); }
@@ -379,6 +404,34 @@ main { padding-bottom: 110px !important; }
     <div id="banner" class="banner" hidden></div>
   </div>
 </header>
+
+<div class="loader" id="loader" hidden role="status" aria-live="polite">
+  <div class="wrap loader-in">
+    <div class="scene" aria-hidden="true"><div class="far"></div><div class="pines"></div><div class="trail"></div>
+        <svg class="scout" viewBox="0 0 64 64" aria-hidden="true">
+          <ellipse cx="30" cy="61" rx="12" ry="2.2" fill="#000" fill-opacity=".3"/>
+          <circle class="dust" cx="16" cy="56" r="3" fill="#fff" fill-opacity=".35"/>
+          <g transform="rotate(9 32 40)"><g class="bob">
+            <rect class="leg l2" x="28" y="38" width="5.5" height="17" rx="2.7" fill="#4b5a3a"/>
+            <rect class="arm a2" x="30" y="24" width="4.2" height="14" rx="2.1" fill="#d9a873"/>
+            <rect x="17.5" y="21" width="11" height="16" rx="3.5" fill="#8a5a2b"/>
+            <rect x="18.5" y="19" width="9" height="4.5" rx="2" fill="#6d4520"/>
+            <rect x="19" y="30" width="8" height="2" rx="1" fill="#b98a4e"/>
+            <rect x="25.5" y="21.5" width="13" height="18.5" rx="4.5" fill="#c9a86a"/>
+            <path d="M27 21.5 H38.5 L34 31 Z" fill="#2f8f45"/>
+            <circle cx="34.5" cy="14.5" r="6.3" fill="#f1c27d"/>
+            <circle cx="37.6" cy="14" r="0.95" fill="#2a2a2a"/>
+            <ellipse cx="34.5" cy="9.6" rx="10.5" ry="2.1" fill="#6f522a"/>
+            <path d="M29.5 9.8 L31.3 2.8 Q34.5 1.4 37.7 2.8 L39.5 9.8 Z" fill="#8f6b38"/>
+            <path d="M33.2 3 L34.5 5.5 L35.8 3" stroke="#6f522a" stroke-width="1" fill="none"/>
+            <rect class="leg l1" x="30.5" y="38" width="5.5" height="17" rx="2.7" fill="#5b6d47"/>
+            <rect class="arm a1" x="31.5" y="24" width="4.2" height="14" rx="2.1" fill="#f1c27d"/>
+          </g></g>
+        </svg>
+    </div>
+    <div class="loader-txt"><b id="loaderTitle">A ir buscar as contas…</b><span id="loaderSub">Um explorador foi a correr até à folha da tesouraria.</span></div>
+  </div>
+</div>
 
 <div class="wrap">
 <main>
@@ -938,6 +991,7 @@ async function boot() {
     $("updated").textContent = "Modo de exemplo";
   } else {
     $("updated").textContent = "A ler as contas…";
+    startLoader();
     try {
       await loadApi();
       banner.hidden = true;
@@ -947,9 +1001,25 @@ async function boot() {
       banner.innerHTML = `<span><b>Não consegui ler as contas.</b> Verifica a ligação à internet e carrega em Atualizar. Se continuar, avisa o tesoureiro.</span>`;
       $("updated").textContent = "Sem ligação às contas";
     }
+    stopLoader();
   }
   render();
 }
+
+const LOADER_MSGS = [
+  ["A ir buscar as contas…", "Um explorador foi a correr até à folha da tesouraria."],
+  ["A atravessar o trilho…", "Cuidado com as raízes dos pinheiros!"],
+  ["A contar as moedas…", "Uma a uma, dentro da mochila."],
+  ["Quase no acampamento…", "Já se vê o fumo da fogueira."],
+];
+let loaderTimer = null;
+function startLoader() {
+  let i = 0;
+  const show = () => { const [t, sub] = LOADER_MSGS[i++ % LOADER_MSGS.length]; $("loaderTitle").textContent = t; $("loaderSub").textContent = sub; };
+  show(); $("loader").hidden = false;
+  clearInterval(loaderTimer); loaderTimer = setInterval(show, 1800);
+}
+function stopLoader() { clearInterval(loaderTimer); $("loader").hidden = true; }
 $("reload").onclick = boot;
 
 /* ---------- janelas (Bússola e tesoureiro) ---------- */
