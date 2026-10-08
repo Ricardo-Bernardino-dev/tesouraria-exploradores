@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tesouraria dos Exploradores 1308</title>
+<meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Contas da secção de Exploradores do Agrupamento 1308 de Genebra.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4a2c'/%3E%3Cpath d='M16 5 L27 26 H5 Z' fill='none' stroke='%23eef5ef' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4a2c'/%3E%3Cg transform='translate(5 3.5) scale(.22)' fill='%23eef5ef'%3E%3Cpath d='M50 2 C64 20 66 44 56 66 H44 C34 44 36 20 50 2 Z'/%3E%3Cpath d='M46 66 C44 44 34 28 22 28 C10 28 4 40 10 50 C13 55 20 54 20 48 C16 49 14 44 18 40 C24 35 34 46 36 66 Z'/%3E%3Cpath d='M54 66 C56 44 66 28 78 28 C90 28 96 40 90 50 C87 55 80 54 80 48 C84 49 86 44 82 40 C76 35 66 46 64 66 Z'/%3E%3Crect x='26' y='62' width='48' height='9' rx='3'/%3E%3Cpath d='M44 73 H56 C58 84 64 92 72 96 C64 100 58 98 54 94 L50 110 L46 94 C42 98 36 100 28 96 C36 92 42 84 44 73 Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -221,6 +222,30 @@ a.btn { display: inline-block; text-decoration: none; }
 .top-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-top: 10px; font-size: .85rem; opacity: .85; }
 .top-meta button { background: none; border: 1px solid rgba(255,255,255,.4); color: var(--forest-ink); border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: .8rem; }
 .banner.err { border-color: var(--bad); background: transparent; color: var(--forest-ink); }
+.brand { display: flex; gap: 14px; align-items: center; }
+.fleur { width: clamp(46px, 10vw, 68px); height: auto; flex: none; color: var(--forest-ink); }
+.kpis { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); }
+.chart-box svg { min-width: 0; touch-action: pan-y; }
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .wrap { padding-inline: 16px; }
+  header.top { padding-block: 20px 22px; }
+  .kpi { padding: 12px 14px; }
+  .kpi .v { font-size: 1.05rem; }
+  .kpi.hero .v { font-size: 2.3rem; }
+  h2 { font-size: 1.35rem; }
+  .panel { padding: 16px; gap: 12px; }
+  .filters input, .filters select, .filters .btn { flex: 1 1 100%; }
+  table.mov thead { display: none; }
+  table.mov tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  table.mov td { border: 0; padding: 0; }
+  table.mov td.d { grid-column: 1; grid-row: 1; }
+  table.mov td.v { grid-column: 2; grid-row: 1 / span 3; align-self: center; font-size: .95rem; }
+  table.mov td.desc, table.mov td.cat { grid-column: 1; }
+  table.mov td.empty { grid-column: 1 / -1; }
+  .reemb .btn { width: 100%; text-align: center; }
+  .kpi:last-child { grid-column: 1 / -1; }
+}
 .reemb { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; }
 </style>
 </head>
@@ -230,7 +255,16 @@ a.btn { display: inline-block; text-decoration: none; }
     <div class="top-row">
       <div>
         <div class="eyebrow">Agrupamento 1308 · Genebra · 2.ª Secção</div>
+        <div class="brand">
+        <svg class="fleur" viewBox="0 0 100 120" aria-hidden="true" fill="currentColor">
+          <path d="M50 2 C64 20 66 44 56 66 H44 C34 44 36 20 50 2 Z"/>
+          <path d="M46 66 C44 44 34 28 22 28 C10 28 4 40 10 50 C13 55 20 54 20 48 C16 49 14 44 18 40 C24 35 34 46 36 66 Z"/>
+          <path d="M54 66 C56 44 66 28 78 28 C90 28 96 40 90 50 C87 55 80 54 80 48 C84 49 86 44 82 40 C76 35 66 46 64 66 Z"/>
+          <rect x="26" y="62" width="48" height="9" rx="3"/>
+          <path d="M44 73 H56 C58 84 64 92 72 96 C64 100 58 98 54 94 L50 110 L46 94 C42 98 36 100 28 96 C36 92 42 84 44 73 Z"/>
+        </svg>
         <h1>Tesouraria dos Exploradores</h1>
+        </div>
         <p class="tag">Quanto dinheiro temos, de onde veio e para onde foi. Atualizado pelo tesoureiro da secção.</p>
       </div>
       <div class="year-pick">
@@ -273,7 +307,7 @@ a.btn { display: inline-block; text-decoration: none; }
   <section class="panel">
     <div class="panel-head">
       <h2>Mês a mês</h2>
-      <div class="legend-inline"><span><span class="dot" style="background:var(--s1)"></span>Entradas</span><span><span class="dot" style="background:var(--s2)"></span>Saídas</span></div>
+      <div class="legend-inline"><span><span class="dot" style="background:var(--s1)"></span>Entradas</span><span><span class="dot" style="background:var(--s2)"></span>Saídas</span><span>valores em CHF</span></div>
     </div>
     <div class="chart-box" id="monthsBox">
       <svg id="months" viewBox="0 0 760 260" role="img" aria-label="Entradas e saídas por mês"></svg>
@@ -295,7 +329,7 @@ a.btn { display: inline-block; text-decoration: none; }
       <button class="btn ghost" id="exportBtn" type="button">Descarregar CSV</button>
     </div>
     <div class="table-box">
-      <table>
+      <table class="mov">
         <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
@@ -334,10 +368,9 @@ const CATS = [
   { id: "alimentacao", tipo: "despesa", nome: "Alimentação", cor: "--c2" },
   { id: "transporte", tipo: "despesa", nome: "Transportes", cor: "--c3" },
   { id: "material", tipo: "despesa", nome: "Material e equipamento", cor: "--c4" },
-  { id: "seguros", tipo: "despesa", nome: "Quotas nacionais e seguros", cor: "--c5" },
-  { id: "insignias", tipo: "despesa", nome: "Insígnias e cerimónias", cor: "--c6" },
+  { id: "insignias", tipo: "despesa", nome: "Insígnias e cerimónias", cor: "--c5" },
   { id: "outros", tipo: "despesa", nome: "Outras despesas", cor: "--c7" },
-  { id: "quotas", tipo: "receita", nome: "Quotas dos exploradores", cor: "--c1" },
+  { id: "quotas", tipo: "receita", nome: "Quotas de secção", cor: "--c1" },
   { id: "angariacao", tipo: "receita", nome: "Angariação de fundos", cor: "--c2" },
   { id: "agrupamento", tipo: "receita", nome: "Subsídio do agrupamento", cor: "--c3" },
   { id: "donativos", tipo: "receita", nome: "Donativos", cor: "--c4" },
@@ -452,28 +485,29 @@ async function loadSheet() {
 /* ---------- dados de exemplo (só quando SHEET_ID está vazio) ---------- */
 function loadExample() {
   const R = [
-    ["2025-09-13","receita","quotas","Quotas do 1.º trimestre (22 exploradores)",990,"Abertura do ano"],["2025-09-14","despesa","seguros","Seguro e quota nacional 2025/26",704,""],
+    ["2025-09-13","receita","quotas","Quotas de secção, 1.º trimestre (22 exploradores)",990,"Abertura do ano"],["2025-09-14","despesa","atividades","Inscrição no acampamento regional",420,"Acampamento regional"],
     ["2025-09-20","despesa","insignias","Lenços e insígnias para novos exploradores",186.4,"Abertura do ano"],["2025-10-04","despesa","material","Cordas, mosquetões e lonas para as patrulhas",312.6,""],
     ["2025-10-18","despesa","transporte","Bilhetes CFF Genebra – Nyon",228,"Raid de outono"],["2025-10-18","despesa","alimentacao","Compras Migros para o raid",264.85,"Raid de outono"],
     ["2025-10-19","receita","quotas","Contribuição dos exploradores para o raid",520,"Raid de outono"],["2025-11-15","receita","angariacao","Venda de calendários 2026",1180,"Calendários"],
     ["2025-11-16","despesa","outros","Impressão dos calendários",345,"Calendários"],["2025-12-13","despesa","alimentacao","Lanche da festa de Natal",96.3,"Festa de Natal"],
-    ["2025-12-14","receita","donativos","Donativo de uma família",200,""],["2026-01-10","receita","quotas","Quotas do 2.º trimestre",990,""],
+    ["2025-12-14","receita","donativos","Donativo de uma família",200,""],["2026-01-10","receita","quotas","Quotas de secção, 2.º trimestre",990,""],
     ["2026-01-24","receita","agrupamento","Subsídio anual do agrupamento",600,""],["2026-02-14","despesa","atividades","Aluguer de casa para o acampamento de Carnaval",640,"Acampamento de Carnaval"],
     ["2026-02-14","despesa","transporte","Comboio e autocarro para Saint-Cergue",412.2,"Acampamento de Carnaval"],["2026-02-15","despesa","alimentacao","Comida para 3 dias",388.9,"Acampamento de Carnaval"],
     ["2026-02-16","receita","quotas","Contribuição dos exploradores (22 x 45)",990,"Acampamento de Carnaval"],["2026-03-21","receita","angariacao","Banca de bolos na paróquia",436.5,"Banca de bolos"],
-    ["2026-04-11","receita","quotas","Quotas do 3.º trimestre",990,""],["2026-04-25","despesa","material","Tendas de patrulha (2 unidades)",578,""],
+    ["2026-04-11","receita","quotas","Quotas de secção, 3.º trimestre",990,""],["2026-04-25","despesa","material","Tendas de patrulha (2 unidades)",578,""],
     ["2026-05-09","despesa","atividades","Entradas no Parc Aventure",352,"Dia de aventura"],["2026-05-09","despesa","transporte","Bilhetes TPG",88,"Dia de aventura"],
     ["2026-06-13","receita","angariacao","Lavagem de carros",612,"Lavagem de carros"],["2026-07-11","despesa","atividades","Terreno de acampamento de verão (10 noites)",1150,"Acampamento de verão"],
     ["2026-07-11","despesa","transporte","Comboio para o Valais",934,"Acampamento de verão"],["2026-07-12","despesa","alimentacao","Comida do acampamento de verão",1460.4,"Acampamento de verão"],
     ["2026-07-12","receita","quotas","Contribuição dos exploradores (22 x 160)",3520,"Acampamento de verão"],["2026-07-20","despesa","material","Gás e reparação de fogareiros",142.7,"Acampamento de verão"],
-    ["2026-09-12","receita","quotas","Quotas do 1.º trimestre (24 exploradores)",1080,"Abertura do ano"],["2026-09-13","despesa","seguros","Seguro e quota nacional 2026/27",768,""],
+    ["2026-09-12","receita","quotas","Quotas de secção, 1.º trimestre (24 exploradores)",1080,"Abertura do ano"],["2026-09-20","receita","angariacao","Venda de rifas para Santiago",845,"Viagem a Santiago"],
     ["2026-09-19","despesa","insignias","Insígnias de promessa",142.5,"Promessas"],["2026-09-27","despesa","material","Kits de primeiros socorros para as patrulhas",224.9,""],
     ["2026-10-03","despesa","transporte","Bilhetes CFF para o raid",246,"Raid de outono"],["2026-10-03","despesa","alimentacao","Compras Coop para o raid",281.35,"Raid de outono"],
     ["2026-10-04","receita","quotas","Contribuição dos exploradores para o raid (24 x 25)",600,"Raid de outono"],
+    ["2026-10-05","receita","donativos","Donativo para a viagem a Santiago",300,"Viagem a Santiago"],
   ];
   S.movs = R.map(([data, tipo, categoria, descricao, valor, atividade]) => ({ data, tipo, categoria, descricao, valor, atividade, ref: "" }));
-  S.cfg = { saldoInicial: 1850, dataSaldoInicial: "2025-09-01", efetivo: 24, meta: { nome: "Acampamento de verão 2027", valor: 6000, data: "2027-07-01" }, formUrl: "",
-    orcamentos: { 2026: { atividades: 2400, alimentacao: 2200, transporte: 1700, material: 800, seguros: 800, insignias: 250, outros: 400 }, 2025: { atividades: 2000, alimentacao: 2000, transporte: 1500, material: 800, seguros: 750, insignias: 200, outros: 400 } } };
+  S.cfg = { saldoInicial: 1850, dataSaldoInicial: "2025-09-01", efetivo: 24, meta: { nome: "Viagem a Santiago", valor: 9000, data: "2027-07-15" }, formUrl: "",
+    orcamentos: { 2026: { atividades: 2400, alimentacao: 2200, transporte: 1700, material: 800, insignias: 250, outros: 400 }, 2025: { atividades: 2000, alimentacao: 2000, transporte: 1500, material: 800, insignias: 200, outros: 400 } } };
 }
 
 /* ---------- cálculos ---------- */
@@ -577,13 +611,15 @@ function roundTop(x, y, w, h, r) {
 function renderMonths() {
   const data = MESES.map((_, i) => ({ i, inn: 0, out: 0 }));
   yearMovs().forEach(m => { const d = data[mesIdx(m.data)]; if (m.tipo === "receita") d.inn += Number(m.valor) || 0; else d.out += Number(m.valor) || 0; });
-  const W = 760, H = 260, L = 64, R = 10, T = 14, B = 30;
+  const box = $("monthsBox"), narrow = box.clientWidth < 520;
+  const W = Math.max(300, Math.round(box.clientWidth || 760)), H = narrow ? 220 : 260, L = narrow ? 46 : 64, R = 6, T = 14, B = 30;
+  const lab = narrow ? ["S", "O", "N", "D", "J", "F", "M", "A", "M", "J", "J", "A"] : MESES;
   const max = niceMax(Math.max(...data.map(d => Math.max(d.inn, d.out))));
   const y = v => T + (H - T - B) * (1 - v / max);
-  const gw = (W - L - R) / 12, bw = Math.min(22, (gw - 14) / 2);
+  const gw = (W - L - R) / 12, bw = Math.max(4, Math.min(22, (gw - (narrow ? 6 : 14)) / 2));
   let g = `<g class="axis">`;
   for (let k = 0; k <= 4; k++) { const v = max * k / 4; g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" ${k ? 'stroke-dasharray="2 4"' : ""}/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${int.format(v)}</text>`; }
-  data.forEach((d, i) => { g += `<text x="${L + gw * i + gw / 2}" y="${H - 10}" text-anchor="middle">${MESES[i]}</text>`; });
+  data.forEach((d, i) => { g += `<text x="${L + gw * i + gw / 2}" y="${H - 10}" text-anchor="middle">${lab[i]}</text>`; });
   g += `</g>`;
   let bars = "";
   data.forEach((d, i) => {
@@ -592,21 +628,26 @@ function renderMonths() {
     bars += `<rect x="${L + gw * i}" y="${T}" width="${gw}" height="${H - T - B}" fill="transparent" data-i="${i}" class="hit"/>`;
   });
   const svg = $("months");
-  svg.innerHTML = g + bars + `<text x="${L - 8}" y="${T - 2}" text-anchor="end" style="fill:var(--muted);font:10px var(--f-mono)">CHF</text>`;
-  const tip = $("tip"), box = $("monthsBox");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = g + bars;
+  const tip = $("tip");
+  const hide = () => { tip.hidden = true; svg.querySelectorAll(".hit").forEach(x => x.setAttribute("fill", "transparent")); };
   svg.querySelectorAll(".hit").forEach(h => {
-    h.onmousemove = e => {
+    h.onpointerdown = h.onpointermove = e => {
+      svg.querySelectorAll(".hit").forEach(x => x.setAttribute("fill", "transparent"));
       const d = data[h.dataset.i];
       tip.innerHTML = `<b>${MESES_LONG[d.i]}</b><div class="row"><span><span class="dot" style="background:var(--s1)"></span>Entradas</span><span class="money">${esc(chf.format(d.inn))}</span></div><div class="row"><span><span class="dot" style="background:var(--s2)"></span>Saídas</span><span class="money">${esc(chf.format(d.out))}</span></div><div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><span>Resultado</span><span class="money">${esc(chf.format(d.inn - d.out))}</span></div>`;
       tip.hidden = false;
       const r = box.getBoundingClientRect();
-      let x = e.clientX - r.left + box.scrollLeft + 14;
-      if (x + 180 > box.scrollLeft + r.width) x -= 200;
-      tip.style.left = x + "px"; tip.style.top = (e.clientY - r.top + 10) + "px";
+      const tw = tip.offsetWidth || 180;
+      let x = e.clientX - r.left + 14;
+      if (x + tw > r.width) x = e.clientX - r.left - tw - 14;
+      tip.style.left = Math.max(0, x) + "px"; tip.style.top = Math.max(0, e.clientY - r.top - 20) + "px";
       h.setAttribute("fill", "rgba(127,127,127,.08)");
     };
-    h.onmouseleave = () => { tip.hidden = true; h.setAttribute("fill", "transparent"); };
+    h.onpointerleave = e => { if (e.pointerType === "mouse") hide(); };
   });
+  document.onpointerdown = e => { if (!svg.contains(e.target)) hide(); };
 }
 
 function renderBudget() {
@@ -640,8 +681,8 @@ function renderTable() {
   tb.innerHTML = rows.slice(0, S.shown).map(m => {
     const c = CAT[m.categoria];
     return `<tr><td class="d">${esc(fmtDate(m.data))}</td>
-      <td>${esc(m.descricao)}${m.atividade || m.ref ? `<span class="ref">${esc([m.atividade, m.ref].filter(Boolean).join(" · "))}</span>` : ""}</td>
-      <td><span class="chip"><i style="background:var(${c.cor})"></i>${esc(c.nome)}</span></td>
+      <td class="desc">${esc(m.descricao)}${m.atividade || m.ref ? `<span class="ref">${esc([m.atividade, m.ref].filter(Boolean).join(" · "))}</span>` : ""}</td>
+      <td class="cat"><span class="chip"><i style="background:var(${c.cor})"></i>${esc(c.nome)}</span></td>
       <td class="v ${m.tipo === "receita" ? "in" : ""}">${m.tipo === "receita" ? "+" : "−"}${esc(chf.format(m.valor).replace("CHF", "").trim())}</td></tr>`;
   }).join("");
   $("more").innerHTML = rows.length > S.shown ? `<button class="linkish" id="moreBtn">Mostrar mais ${rows.length - S.shown}</button>` : "";
@@ -691,6 +732,8 @@ async function boot() {
   render();
 }
 $("reload").onclick = boot;
+let rz; let lastW = innerWidth;
+addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; renderMonths(); } }, 150); });
 boot();
 })();
 </script>
