@@ -90,41 +90,41 @@ function adicionar_(m) {
  * Lista de modelos a tentar, do melhor para o pior. Se GEMINI_MODEL estiver definido, usa só esse.
  * Senão pergunta à Google que modelos existem para esta chave (a Google muda os nomes com
  * frequência) e ordena os "Flash", pondo primeiro o último que funcionou.
+ * rapido = true prefere os "Flash-Lite" (respondem mais depressa; bons para perguntas).
+ * rapido = false prefere o Flash completo (mais preciso; melhor para ler talões).
  */
-function candidatos_(key) {
+function candidatos_(key, rapido) {
   const props = PropertiesService.getScriptProperties();
   const fixo = props.getProperty("GEMINI_MODEL");
   if (fixo) return [fixo];
   const cache = CacheService.getScriptCache();
-  let lista = JSON.parse(cache.get("gemini_modelos") || "null");
-  if (!lista) {
+  let nomes = JSON.parse(cache.get("gemini_modelos_v2") || "null");
+  if (!nomes) {
     const res = UrlFetchApp.fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", {
       headers: { "x-goog-api-key": key }, muteHttpExceptions: true,
     });
     if (res.getResponseCode() !== 200) throw new Error("Não consegui ver os modelos do Gemini (" + res.getResponseCode() + "). Confirma a chave GEMINI_API_KEY.");
-    const pontos = n => {
-      if (!/flash/.test(n) || /(image|tts|audio|live|embedding|thinking|exp|8b)/.test(n)) return -1;
-      let p = parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || "0") * 10;
-      if (/lite/.test(n)) p -= 3;
-      if (/preview/.test(n)) p -= 2;
-      if (/latest/.test(n)) p += 1;
-      return p;
-    };
-    lista = (JSON.parse(res.getContentText()).models || [])
+    nomes = (JSON.parse(res.getContentText()).models || [])
       .filter(m => (m.supportedGenerationMethods || []).indexOf("generateContent") > -1)
       .map(m => String(m.name).replace(/^models\//, ""))
-      .filter(n => pontos(n) >= 0)
-      .sort((a, b) => pontos(b) - pontos(a))
-      .slice(0, 6);
-    if (!lista.length) throw new Error("Não encontrei nenhum modelo Gemini Flash disponível para esta chave.");
-    cache.put("gemini_modelos", JSON.stringify(lista), 6 * 3600);
+      .filter(n => /flash/.test(n) && !/(image|tts|audio|live|embedding|thinking|exp|8b)/.test(n));
+    if (!nomes.length) throw new Error("Não encontrei nenhum modelo Gemini Flash disponível para esta chave.");
+    cache.put("gemini_modelos_v2", JSON.stringify(nomes), 6 * 3600);
   }
-  const ultimo = props.getProperty("GEMINI_MODEL_AUTO");
+  const pontos = n => {
+    let p = parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || "0") * 10;
+    if (/lite/.test(n)) p += rapido ? 15 : -3;
+    if (/preview/.test(n)) p -= 2;
+    if (/latest/.test(n)) p += 1;
+    return p;
+  };
+  let lista = nomes.slice().sort((a, b) => pontos(b) - pontos(a)).slice(0, 6);
+  const ultimo = props.getProperty(rapido ? "GEMINI_MODEL_RAPIDO" : "GEMINI_MODEL_AUTO");
   if (ultimo && lista.indexOf(ultimo) > -1) lista = [ultimo].concat(lista.filter(n => n !== ultimo));
   return lista;
 }
 
-function gemini_(parts, comoJson) {
+function gemini_(parts, comoJson, rapido) {
   const props = PropertiesService.getScriptProperties();
   const key = props.getProperty("GEMINI_API_KEY");
   if (!key) throw new Error("Falta a chave do Gemini nas propriedades do script.");
@@ -140,13 +140,13 @@ function gemini_(parts, comoJson) {
   });
   // Tenta até 3 modelos. Ocupado (503/500) ou limite (429) num modelo → passa ao seguinte.
   let res, code = 0, tentados = [];
-  for (const modelo of candidatos_(key).slice(0, 3)) {
+  for (const modelo of candidatos_(key, !!rapido).slice(0, 3)) {
     tentados.push(modelo);
     res = chamar(modelo);
     code = res.getResponseCode();
-    if (code === 503 || code === 500) { Utilities.sleep(1500); res = chamar(modelo); code = res.getResponseCode(); }
-    if (code === 200) { props.setProperty("GEMINI_MODEL_AUTO", modelo); break; }
-    if (code === 404) CacheService.getScriptCache().remove("gemini_modelos");
+    if (code === 503 || code === 500) { Utilities.sleep(1000); res = chamar(modelo); code = res.getResponseCode(); }
+    if (code === 200) { props.setProperty(rapido ? "GEMINI_MODEL_RAPIDO" : "GEMINI_MODEL_AUTO", modelo); break; }
+    if (code === 404) CacheService.getScriptCache().remove("gemini_modelos_v2");
     if ([404, 429, 500, 503].indexOf(code) === -1) break;
   }
   if (code === 429) throw new Error("O Gemini atingiu o limite gratuito. Tenta daqui a uns minutos.");
@@ -184,7 +184,7 @@ Usa só estes dados e faz as contas com cuidado. Se a resposta não estiver nos 
 Se a pergunta não tiver nada a ver com as finanças da secção, responde com simpatia que só sabes falar das contas.
 
 Pergunta: ${q}`;
-  return { ok: true, resposta: gemini_([{ text: prompt }], false) };
+  return { ok: true, resposta: gemini_([{ text: prompt }], false, true) };
 }
 
 function lerTalao_(b64, mime) {
@@ -200,7 +200,7 @@ Responde só com JSON neste formato:
 - Se a data não for legível, usa ${hoje}.
 - categoria: escolhe a mais provável desta lista (Tipo: Categoria):
 ${lista}`;
-  const txt = gemini_([{ text: prompt }, { inline_data: { mime_type: mime, data: b64 } }], true);
+  const txt = gemini_([{ text: prompt }, { inline_data: { mime_type: mime, data: b64 } }], true, false);
   let dados;
   try { dados = JSON.parse(txt.replace(/^```(json)?|```$/g, "")); } catch (e) { throw new Error("Não consegui ler o talão. Tenta uma foto mais nítida."); }
   let link = "";
@@ -245,8 +245,12 @@ function json_(o) {
 
 /** Corre esta função uma vez no editor para autorizar o script e testar a chave. */
 function testar() {
-  Logger.log(JSON.stringify(lerContas_(false)).slice(0, 500));
-  Logger.log("Resposta do Gemini: " + gemini_([{ text: "Responde só: olá escuteiros!" }], false));
+  Logger.log(JSON.stringify(lerContas_(false)).slice(0, 300));
   const p = PropertiesService.getScriptProperties();
-  Logger.log("Modelo usado: " + (p.getProperty("GEMINI_MODEL") || p.getProperty("GEMINI_MODEL_AUTO")));
+  let t = Date.now();
+  Logger.log("Perguntas (rápido): " + gemini_([{ text: "Responde só: olá escuteiros!" }], false, true) +
+    " — " + p.getProperty("GEMINI_MODEL_RAPIDO") + ", " + ((Date.now() - t) / 1000).toFixed(1) + " s");
+  t = Date.now();
+  Logger.log("Talões (preciso): " + gemini_([{ text: "Responde só: olá escuteiros!" }], false, false) +
+    " — " + p.getProperty("GEMINI_MODEL_AUTO") + ", " + ((Date.now() - t) / 1000).toFixed(1) + " s");
 }
