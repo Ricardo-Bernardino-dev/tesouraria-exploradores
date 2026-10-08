@@ -223,6 +223,12 @@ a.btn { display: inline-block; text-decoration: none; }
 .top-meta button { background: none; border: 1px solid rgba(255,255,255,.4); color: var(--forest-ink); border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: .8rem; }
 .banner.err { border-color: var(--bad); background: transparent; color: var(--forest-ink); }
 .drop { display: block; }
+header.top .wrap { position: relative; }
+.tes-top { position: absolute; top: -12px; right: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.1); color: var(--forest-ink); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: .82rem; cursor: pointer; backdrop-filter: blur(2px); }
+.tes-top:hover { background: rgba(255,255,255,.18); }
+.tes-top .on { width: 8px; height: 8px; border-radius: 50%; background: #5fd38a; box-shadow: 0 0 0 2px rgba(95,211,138,.3); }
+header.top .eyebrow { padding-right: 150px; }
+@media (max-width: 560px) { .tes-top { right: 16px; top: -8px; padding: 5px 10px; } header.top .eyebrow { padding-right: 120px; } }
 /* Bússola (chat) e área do tesoureiro: janelas flutuantes */
 .fabs { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 40; }
 .fab { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 12px 18px 12px 14px; background: var(--forest); color: var(--forest-ink); font-weight: 700; font-size: .95rem; box-shadow: 0 8px 24px rgba(0,0,0,.28); cursor: pointer; }
@@ -348,6 +354,7 @@ main { padding-bottom: 110px !important; }
 <body>
 <header class="top">
   <div class="wrap">
+    <button type="button" class="tes-top" id="tesTop" hidden aria-label="Área do tesoureiro">🔒 Tesoureiro</button>
     <div class="top-row">
       <div>
         <div class="eyebrow">Agrupamento 1308 · Genebra · 2.ª Secção</div>
@@ -483,7 +490,7 @@ main { padding-bottom: 110px !important; }
     </div>
   </section>
 
-  <footer>Valores em francos suíços (CHF). O ano escutista vai de 1 de setembro a 31 de agosto. <button type="button" class="linkish" id="tesOpen" hidden>Área do tesoureiro</button></footer>
+  <footer>Valores em francos suíços (CHF). O ano escutista vai de 1 de setembro a 31 de agosto.</footer>
 </main>
 </div>
 
@@ -956,7 +963,10 @@ function closeSheets() {
   $("backdrop").hidden = true; document.body.classList.remove("sheet-open");
   updateFabs();
 }
-function updateFabs() { $("fabs").hidden = !API_URL; $("fabTes").hidden = !PIN; }
+function updateFabs() {
+  $("fabs").hidden = !API_URL; $("fabTes").hidden = !PIN;
+  $("tesTop").innerHTML = PIN ? '<span class="on"></span>📒 Tesoureiro' : "🔒 Tesoureiro";
+}
 $("backdrop").onclick = closeSheets;
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheets);
 addEventListener("keydown", e => { if (e.key === "Escape") closeSheets(); });
@@ -1011,7 +1021,7 @@ function showTes() {
   $("mData").value ||= today; fillCats();
   if (!PIN && matchMedia("(pointer: fine)").matches) $("pinInput").focus();
 }
-$("tesOpen").onclick = showTes;
+$("tesTop").onclick = showTes;
 $("fabTes").onclick = showTes;
 $("tesSair").onclick = () => { PIN = null; store.set("tes_pin", null); closeSheets(); };
 $("pinForm").onsubmit = async e => {
@@ -1065,7 +1075,7 @@ $("movForm").onsubmit = async e => {
   $("movSave").disabled = false;
 };
 if (API_URL) {
-  $("tesOpen").hidden = false; $("askTop").hidden = false; updateFabs();
+  $("tesTop").hidden = false; $("askTop").hidden = false; updateFabs();
   if (location.hash === "#tesoureiro") showTes();
   if (location.hash === "#bussola") openChat();
 }
