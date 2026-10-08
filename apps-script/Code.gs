@@ -112,7 +112,11 @@ function pergunta_(q) {
   const csv = rows => rows.map(r => r.join(";")).join("\n");
   const hoje = Utilities.formatDate(new Date(), SpreadsheetApp.getActive().getSpreadsheetTimeZone(), "yyyy-MM-dd");
   const prompt = `És o assistente da tesouraria da secção de Exploradores (escuteiros dos 10 aos 14 anos) do Agrupamento 1308 de Genebra, Suíça. Moeda: CHF. Hoje: ${hoje}.
-O ano escutista vai de 1 de setembro a 31 de agosto. O grande projeto da secção é a Viagem a Santiago.
+O ano escutista vai de 1 de setembro a 31 de agosto.
+O grande projeto da secção é o Caminho de Santiago 2027: 8 a 12 de setembro de 2027, 19 exploradores + 5 dirigentes (24 pessoas),
+Caminho Francês de Salceda a Santiago (~11 km + ~20 km a pé). Meta de angariação: CHF 6'000 (CHF 250 por pessoa).
+Orçamento previsto (ainda sem cotações): voos CHF 3'360, alimentação CHF 960, dormidas CHF 768, transporte local CHF 480, margem CHF 432.
+O dinheiro angariado para Santiago são as entradas com "Santiago" na atividade ou na descrição.
 
 DEFINIÇÕES (saldo inicial, meta, etc.):
 ${csv(c.definicoes)}

@@ -70,6 +70,10 @@ A foto fica guardada na pasta **"Talões — Tesouraria Exploradores"** do teu G
 ### Pela folha
 Também podes escrever diretamente na folha. *Tipo* e *Categoria* escolhem-se numa lista; não mudes os nomes das categorias.
 
+### Caminho de Santiago 2027
+Tudo o que for angariado para a viagem deve ter **`Santiago 2027`** na coluna *Atividade*. É assim que o site calcula o fundo da viagem, o que falta angariar e quanto é preciso por mês. As despesas da viagem (voos, albergues…) também levam `Santiago 2027` e aparecem como "Já pago para a viagem".
+O orçamento, os cenários e o itinerário estão no `index.html`, no bloco `SANTIAGO`. Quando houver cotações reais, pede ao Claude para os atualizar.
+
 ### Pergunta às contas
 Qualquer pessoa pode perguntar no site, por exemplo "quanto já juntámos para Santiago?". Para não gastar o limite grátis, há um máximo de 40 perguntas por hora e 250 por dia.
 

@@ -223,6 +223,56 @@ a.btn { display: inline-block; text-decoration: none; }
 .top-meta button { background: none; border: 1px solid rgba(255,255,255,.4); color: var(--forest-ink); border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: .8rem; }
 .banner.err { border-color: var(--bad); background: transparent; color: var(--forest-ink); }
 .drop { display: block; }
+/* Santiago */
+.stg { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.stg-head { background: var(--forest); color: var(--forest-ink); padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: flex-end; justify-content: space-between;
+  background-image: repeating-linear-gradient(-45deg, transparent 0 22px, rgba(255,255,255,.04) 22px 23px); }
+.stg-head h2 { font-size: clamp(1.7rem, 5vw, 2.4rem); }
+.stg-head .meta-line { font-size: .88rem; opacity: .85; margin-top: 4px; }
+.count { text-align: right; }
+.count b { display: block; font-family: var(--f-display); font-size: 2.4rem; font-weight: 800; line-height: 1; color: var(--amber); }
+.count span { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; opacity: .8; font-weight: 700; }
+.stg-body { padding: 20px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 26px; }
+.stg-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.stg-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.stg-stats div { border-top: 2px solid var(--line); padding-top: 6px; }
+.stg-stats b { display: block; font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 1.05rem; font-weight: 500; }
+.stg-stats span { font-size: .78rem; color: var(--ink-2); }
+.stack { display: flex; height: 26px; border-radius: 6px; overflow: hidden; gap: 2px; background: var(--card); }
+.stack > div { min-width: 2px; }
+.stack .margem { background: repeating-linear-gradient(45deg, var(--line) 0 4px, transparent 4px 8px); border: 1px solid var(--line); }
+.rub { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: .88rem; }
+.rub li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.rub li:last-child { border-bottom: 0; }
+.rub small { grid-column: 1; color: var(--muted); font-family: var(--f-mono); font-size: .75rem; }
+.rub .money { grid-row: 1 / span 2; grid-column: 2; align-self: center; }
+.cen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cen div { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 2px; font-size: .82rem; }
+.cen div.alvo { border-color: var(--amber); }
+.cen b { font-family: var(--f-mono); font-size: 1rem; font-weight: 500; }
+.cen .ok { color: var(--good); font-weight: 700; font-size: .75rem; }
+.cen .no { color: var(--muted); font-size: .75rem; }
+.route { list-style: none; margin: 0; padding: 0; position: relative; }
+.route::before { content: ""; position: absolute; left: 9px; top: 10px; bottom: 10px; border-left: 2px dashed var(--amber); }
+.route li { position: relative; padding: 0 0 14px 32px; }
+.route li::before { content: ""; position: absolute; left: 3px; top: 5px; width: 14px; height: 14px; border-radius: 50%; background: var(--card); border: 3px solid var(--amber); }
+.route li.walk::before { background: var(--amber); }
+.route .dia { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.route .t { font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.route .km { font-family: var(--f-mono); font-size: .72rem; font-weight: 500; color: var(--amber); border: 1px solid var(--amber); border-radius: 999px; padding: 0 7px; }
+.route p { margin: 2px 0 0; font-size: .86rem; color: var(--ink-2); }
+.note { font-size: .8rem; color: var(--muted); margin: 0; }
+.ativ { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: .9rem; }
+.ativ li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.ativ li:last-child { border-bottom: 0; }
+.ativ .pos { color: var(--good); }
+@media (max-width: 860px) { .stg-body { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .stg-head, .stg-body { padding: 16px; }
+  .count { text-align: left; }
+  .cen { grid-template-columns: 1fr; }
+  .stg-stats b { font-size: .95rem; }
+}
 :root { --btn-ink: #ffffff; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --btn-ink: #0d2315; } }
 :root[data-theme="dark"] { --btn-ink: #0d2315; }
@@ -292,6 +342,45 @@ a.btn { display: inline-block; text-decoration: none; }
     <div class="kpi"><span class="label">Gasto por explorador</span><span class="v" id="kPer">—</span><span class="hint" id="kPerHint">&nbsp;</span></div>
   </section>
 
+  <section class="stg" id="santiago" aria-label="Caminho de Santiago 2027">
+    <div class="stg-head">
+      <div>
+        <div class="eyebrow" style="font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;opacity:.8;font-weight:700">O nosso grande projeto</div>
+        <h2>Caminho de Santiago 2027</h2>
+        <div class="meta-line" id="stgLine"></div>
+      </div>
+      <div class="count"><b id="stgDays">—</b><span>dias para partir</span></div>
+    </div>
+    <div class="stg-body">
+      <div class="stg-col">
+        <div>
+          <div class="label" style="margin-bottom:6px">Fundo da viagem</div>
+          <div class="meta-nums"><span><b class="money" id="stgRaised">—</b> angariados de <span class="money" id="stgMeta">—</span></span><span class="money" id="stgPct">—</span></div>
+          <div class="meta-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="stgBarWrap"><div id="stgBar" style="width:0"></div></div>
+        </div>
+        <div class="stg-stats">
+          <div><b id="stgFalta">—</b><span>ainda a angariar</span></div>
+          <div><b id="stgPP">—</b><span id="stgPPHint">por participante</span></div>
+          <div><b id="stgMes">—</b><span>por mês até partir</span></div>
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:8px">Para onde vai o dinheiro</div>
+          <div class="stack" id="stgStack"></div>
+          <ul class="rub" id="stgRub" style="margin-top:8px"></ul>
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:8px">Cenários de custo</div>
+          <div class="cen" id="stgCen"></div>
+        </div>
+        <p class="note">Preços de planeamento, ainda sem cotações confirmadas. Conta para o fundo todo o movimento com "Santiago" na atividade ou na descrição.</p>
+      </div>
+      <div class="stg-col">
+        <div class="label">O caminho, dia a dia</div>
+        <ol class="route" id="stgRoute"></ol>
+      </div>
+    </div>
+  </section>
+
   <section class="grid2">
     <div class="panel">
       <div class="panel-head"><h2>Para onde foi o dinheiro</h2><span class="sub" id="donutSub"></span></div>
@@ -301,8 +390,8 @@ a.btn { display: inline-block; text-decoration: none; }
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h2 id="metaTitle">Meta da secção</h2></div>
-      <div id="metaBody"></div>
+      <div class="panel-head"><h2>Por atividade</h2><span class="sub" id="ativSub"></span></div>
+      <ul class="ativ" id="ativList"></ul>
       <div>
         <div class="label" style="margin-bottom:8px">O saldo em moeda de escuteiro <span style="text-transform:none;letter-spacing:0;font-weight:400">(aproximado, por graça)</span></div>
         <div class="fun" id="fun"></div>
@@ -330,6 +419,7 @@ a.btn { display: inline-block; text-decoration: none; }
     <div class="panel-head"><h2>Pergunta às contas</h2><span class="sub">Uma inteligência artificial lê as contas e responde.</span></div>
     <div class="chips" id="askChips">
       <button type="button">Quanto já juntámos para Santiago?</button>
+      <button type="button">Quantos dias faltam para Santiago e quanto temos de juntar por mês?</button>
       <button type="button">Quanto gastámos em transportes este ano?</button>
       <button type="button">Qual foi a atividade mais cara?</button>
       <button type="button">Resume as contas em 3 frases para os pais</button>
@@ -388,7 +478,7 @@ a.btn { display: inline-block; text-decoration: none; }
         <div class="f"><label for="mVal">Valor (CHF)</label><input id="mVal" type="number" inputmode="decimal" step="0.05" min="0" required></div>
         <div class="f"><label for="mCat">Categoria</label><select id="mCat"></select></div>
         <div class="f w2"><label for="mDesc">Descrição</label><input id="mDesc" required maxlength="140" placeholder="Ex.: Compras Coop para o raid"></div>
-        <div class="f w2"><label for="mAtiv">Atividade (opcional)</label><input id="mAtiv" maxlength="80" placeholder="Ex.: Viagem a Santiago"></div>
+        <div class="f w2"><label for="mAtiv">Atividade (opcional)</label><input id="mAtiv" maxlength="80" placeholder="Ex.: Santiago 2027"></div>
         <input type="hidden" id="mTalao">
         <div class="form-actions"><button class="btn" id="movSave">Guardar na folha</button><span class="status" id="movStatus"></span></div>
       </form>
@@ -422,6 +512,28 @@ const CATS = [
   { id: "donativos", tipo: "receita", nome: "Donativos", cor: "--c4" },
   { id: "outros_r", tipo: "receita", nome: "Outras entradas", cor: "--c7" },
 ];
+/* Caminho de Santiago 2027 — do plano de 08/10/2026. Atualizar quando houver cotações. */
+const SANTIAGO = {
+  inicio: "2027-09-08", fim: "2027-09-12", exploradores: 19, dirigentes: 5, meta: 6000, porPessoa: 250,
+  rubricas: [
+    { nome: "Voos ida e volta", calc: "CHF 140 × 24", valor: 3360, cor: "--c1" },
+    { nome: "Alimentação", calc: "CHF 8 × 5 dias × 24", valor: 960, cor: "--c2" },
+    { nome: "Dormidas", calc: "CHF 8 × 4 noites × 24", valor: 768, cor: "--c3" },
+    { nome: "Transporte local", calc: "CHF 20 × 24", valor: 480, cor: "--c4" },
+  ],
+  cenarios: [
+    { nome: "Muito económico", pp: 165, total: 3960, nota: "voo 110, alojamento cedido" },
+    { nome: "Meta de trabalho", pp: 232, total: 5568, nota: "voo 140, dormidas a 8", alvo: true },
+    { nome: "Tudo mais caro", pp: 350, total: 8400, nota: "voo 200, alojamento pago" },
+  ],
+  dias: [
+    { d: "2027-09-08", t: "Genebra → Salceda", txt: "Voo para Santiago (ou Porto, se for muito mais barato) e transfer até Salceda.", dorme: "Salceda" },
+    { d: "2027-09-09", t: "Salceda → O Pedrouzo", km: 11, txt: "Primeiro dia de caminho, ao ritmo dos Exploradores, com tarefas de patrulha.", dorme: "O Pedrouzo" },
+    { d: "2027-09-10", t: "O Pedrouzo → Santiago", km: 20, txt: "Saída cedo. O dia mais exigente, até à Praça do Obradoiro.", dorme: "Santiago" },
+    { d: "2027-09-11", t: "Santiago", txt: "Catedral, missa se possível, centro histórico e jogo de pistas. Almoço comprado por patrulhas.", dorme: "Santiago" },
+    { d: "2027-09-12", t: "Santiago → Genebra", txt: "Regresso ao aeroporto e voo para casa." },
+  ],
+};
 const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
 const MESES = ["Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago"];
 const MESES_LONG = ["setembro", "outubro", "novembro", "dezembro", "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto"];
@@ -522,25 +634,25 @@ function loadExample() {
     ["2025-09-13","receita","quotas","Quotas de secção, 1.º trimestre (22 exploradores)",990,"Abertura do ano"],["2025-09-14","despesa","atividades","Inscrição no acampamento regional",420,"Acampamento regional"],
     ["2025-09-20","despesa","insignias","Lenços e insígnias para novos exploradores",186.4,"Abertura do ano"],["2025-10-04","despesa","material","Cordas, mosquetões e lonas para as patrulhas",312.6,""],
     ["2025-10-18","despesa","transporte","Bilhetes CFF Genebra – Nyon",228,"Raid de outono"],["2025-10-18","despesa","alimentacao","Compras Migros para o raid",264.85,"Raid de outono"],
-    ["2025-10-19","receita","quotas","Contribuição dos exploradores para o raid",520,"Raid de outono"],["2025-11-15","receita","angariacao","Venda de calendários 2026",1180,"Calendários"],
+    ["2025-10-19","receita","quotas","Contribuição dos exploradores para o raid",520,"Raid de outono"],["2025-11-15","receita","angariacao","Venda de calendários 2026",1180,"Santiago 2027"],
     ["2025-11-16","despesa","outros","Impressão dos calendários",345,"Calendários"],["2025-12-13","despesa","alimentacao","Lanche da festa de Natal",96.3,"Festa de Natal"],
     ["2025-12-14","receita","donativos","Donativo de uma família",200,""],["2026-01-10","receita","quotas","Quotas de secção, 2.º trimestre",990,""],
     ["2026-01-24","receita","agrupamento","Subsídio anual do agrupamento",600,""],["2026-02-14","despesa","atividades","Aluguer de casa para o acampamento de Carnaval",640,"Acampamento de Carnaval"],
     ["2026-02-14","despesa","transporte","Comboio e autocarro para Saint-Cergue",412.2,"Acampamento de Carnaval"],["2026-02-15","despesa","alimentacao","Comida para 3 dias",388.9,"Acampamento de Carnaval"],
-    ["2026-02-16","receita","quotas","Contribuição dos exploradores (22 x 45)",990,"Acampamento de Carnaval"],["2026-03-21","receita","angariacao","Banca de bolos na paróquia",436.5,"Banca de bolos"],
+    ["2026-02-16","receita","quotas","Contribuição dos exploradores (22 x 45)",990,"Acampamento de Carnaval"],["2026-03-21","receita","angariacao","Banca de bolos na paróquia",436.5,"Santiago 2027"],
     ["2026-04-11","receita","quotas","Quotas de secção, 3.º trimestre",990,""],["2026-04-25","despesa","material","Tendas de patrulha (2 unidades)",578,""],
     ["2026-05-09","despesa","atividades","Entradas no Parc Aventure",352,"Dia de aventura"],["2026-05-09","despesa","transporte","Bilhetes TPG",88,"Dia de aventura"],
-    ["2026-06-13","receita","angariacao","Lavagem de carros",612,"Lavagem de carros"],["2026-07-11","despesa","atividades","Terreno de acampamento de verão (10 noites)",1150,"Acampamento de verão"],
+    ["2026-06-13","receita","angariacao","Lavagem de carros",612,"Santiago 2027"],["2026-07-11","despesa","atividades","Terreno de acampamento de verão (10 noites)",1150,"Acampamento de verão"],
     ["2026-07-11","despesa","transporte","Comboio para o Valais",934,"Acampamento de verão"],["2026-07-12","despesa","alimentacao","Comida do acampamento de verão",1460.4,"Acampamento de verão"],
     ["2026-07-12","receita","quotas","Contribuição dos exploradores (22 x 160)",3520,"Acampamento de verão"],["2026-07-20","despesa","material","Gás e reparação de fogareiros",142.7,"Acampamento de verão"],
-    ["2026-09-12","receita","quotas","Quotas de secção, 1.º trimestre (24 exploradores)",1080,"Abertura do ano"],["2026-09-20","receita","angariacao","Venda de rifas para Santiago",845,"Viagem a Santiago"],
+    ["2026-09-12","receita","quotas","Quotas de secção, 1.º trimestre (24 exploradores)",1080,"Abertura do ano"],["2026-09-20","receita","angariacao","Venda de rifas",845,"Santiago 2027"],
     ["2026-09-19","despesa","insignias","Insígnias de promessa",142.5,"Promessas"],["2026-09-27","despesa","material","Kits de primeiros socorros para as patrulhas",224.9,""],
     ["2026-10-03","despesa","transporte","Bilhetes CFF para o raid",246,"Raid de outono"],["2026-10-03","despesa","alimentacao","Compras Coop para o raid",281.35,"Raid de outono"],
     ["2026-10-04","receita","quotas","Contribuição dos exploradores para o raid (24 x 25)",600,"Raid de outono"],
-    ["2026-10-05","receita","donativos","Donativo para a viagem a Santiago",300,"Viagem a Santiago"],
+    ["2026-10-05","receita","donativos","Donativo de uma família",300,"Santiago 2027"],
   ];
   S.movs = R.map(([data, tipo, categoria, descricao, valor, atividade]) => ({ data, tipo, categoria, descricao, valor, atividade, ref: "" }));
-  S.cfg = { saldoInicial: 1850, dataSaldoInicial: "2025-09-01", efetivo: 24, meta: { nome: "Viagem a Santiago", valor: 9000, data: "2027-07-15" }, formUrl: "",
+  S.cfg = { saldoInicial: 1850, dataSaldoInicial: "2025-09-01", efetivo: 24, meta: { nome: "Caminho de Santiago 2027", valor: 6000, data: "2027-09-08" }, formUrl: "",
     orcamentos: { 2026: { atividades: 2400, alimentacao: 2200, transporte: 1700, material: 800, insignias: 250, outros: 400 }, 2025: { atividades: 2000, alimentacao: 2000, transporte: 1500, material: 800, insignias: 200, outros: 400 } } };
 }
 
@@ -554,7 +666,7 @@ function saldoAtual() {
 }
 
 /* ---------- desenho ---------- */
-function render() { renderYears(); renderKpis(); renderDonut(); renderMeta(); renderMonths(); renderBudget(); renderTable(); renderForm(); }
+function render() { renderYears(); renderKpis(); renderSantiago(); renderDonut(); renderMeta(); renderMonths(); renderBudget(); renderTable(); renderForm(); }
 
 function renderYears() {
   const ks = new Set([anoKey(today), S.year, ...S.movs.map(m => anoKey(m.data))]);
@@ -608,26 +720,46 @@ function renderDonut() {
   leg.querySelectorAll("li").forEach(li => { li.onmouseenter = () => hl(li.dataset.i); li.onmouseleave = () => hl(null); });
 }
 
+const isSantiago = m => norm(`${m.atividade} ${m.descricao}`).includes("santiago");
+function renderSantiago() {
+  const G = SANTIAGO, n = G.exploradores + G.dirigentes;
+  const meta = S.cfg.meta && S.cfg.meta.valor && norm(S.cfg.meta.nome).includes("santiago") ? S.cfg.meta.valor : G.meta;
+  const mv = S.movs.filter(isSantiago);
+  const raised = sum(mv, "receita"), spent = sum(mv, "despesa");
+  const falta = Math.max(0, meta - raised);
+  const dias = Math.max(0, Math.ceil((new Date(G.inicio + "T00:00") - new Date(today + "T00:00")) / 864e5));
+  const meses = Math.max(1, Math.round(dias / 30.4));
+  const pct = Math.min(100, raised / meta * 100);
+  $("stgLine").textContent = `8 a 12 de setembro de 2027 · ${G.exploradores} exploradores + ${G.dirigentes} dirigentes · Caminho Francês, Salceda → Santiago`;
+  $("stgDays").textContent = int.format(dias);
+  $("stgRaised").textContent = chf0.format(raised);
+  $("stgMeta").textContent = chf0.format(meta);
+  $("stgPct").textContent = `${Math.round(pct)}%`;
+  $("stgBar").style.width = pct + "%"; $("stgBarWrap").setAttribute("aria-valuenow", Math.round(pct));
+  $("stgFalta").textContent = chf0.format(falta);
+  $("stgPP").textContent = `${chf0.format(raised / n)} / ${int.format(meta / n)}`;
+  $("stgPPHint").textContent = `por participante (${n})`;
+  $("stgMes").textContent = falta ? chf0.format(falta / meses) : "Meta atingida";
+  const totalRub = G.rubricas.reduce((a, r) => a + r.valor, 0), margem = Math.max(0, meta - totalRub);
+  $("stgStack").innerHTML = G.rubricas.map(r => `<div style="flex:${r.valor};background:var(${r.cor})" title="${esc(r.nome)}: ${esc(chf0.format(r.valor))}"></div>`).join("") +
+    (margem ? `<div class="margem" style="flex:${margem}" title="Margem não comprometida: ${esc(chf0.format(margem))}"></div>` : "");
+  $("stgRub").innerHTML = G.rubricas.map(r => `<li><span><span class="dot" style="background:var(${r.cor})"></span>${esc(r.nome)}</span><small>${esc(r.calc)}</small><span class="money">${esc(chf0.format(r.valor))}</span></li>`).join("") +
+    (margem ? `<li><span><span class="dot" style="background:var(--line)"></span>Margem não comprometida</span><small>${esc(chf0.format(meta))} − ${esc(chf0.format(totalRub))}</small><span class="money">${esc(chf0.format(margem))}</span></li>` : "") +
+    (spent ? `<li><span><b>Já pago para a viagem</b></span><small>movimentos de saída com "Santiago"</small><span class="money">${esc(chf0.format(spent))}</span></li>` : "");
+  $("stgCen").innerHTML = G.cenarios.map(c => `<div class="${c.alvo ? "alvo" : ""}"><span>${esc(c.nome)}</span><b>${esc(chf0.format(c.total))}</b><span class="sub" style="font-size:.75rem">${esc(chf0.format(c.pp))}/pessoa · ${esc(c.nota)}</span>${raised >= c.total ? `<span class="ok">✓ Já coberto</span>` : `<span class="no">Faltam ${esc(chf0.format(c.total - raised))}</span>`}</div>`).join("");
+  $("stgRoute").innerHTML = G.dias.map((d, i) => `<li class="${d.km ? "walk" : ""}"><span class="dia">Dia ${i + 1} · ${esc(new Date(d.d + "T12:00").toLocaleDateString("pt-PT", { weekday: "short", day: "numeric", month: "short" }))}</span>
+    <div class="t">${esc(d.t)}${d.km ? `<span class="km">~${d.km} km a pé</span>` : ""}</div><p>${esc(d.txt)}${d.dorme ? ` Dormida: ${esc(d.dorme)}.` : ""}</p></li>`).join("");
+}
+
 function renderMeta() {
-  const m = S.cfg.meta, saldo = saldoAtual(), body = $("metaBody");
-  if (!m || !m.valor) {
-    $("metaTitle").textContent = "Meta da secção";
-    body.innerHTML = `<p class="sub">Ainda não há uma meta de poupança definida.</p>`;
-  } else {
-    const pct = Math.max(0, Math.min(100, saldo / m.valor * 100)), falta = Math.max(0, m.valor - saldo);
-    let ritmo = "";
-    if (m.data && falta > 0) {
-      const meses = Math.max(1, Math.round((new Date(m.data) - new Date(today)) / (30.4 * 864e5)));
-      ritmo = `Faltam ${meses} ${meses === 1 ? "mês" : "meses"}: precisamos de juntar cerca de <b class="money">${esc(chf0.format(falta / meses))}</b> por mês.`;
-    }
-    $("metaTitle").textContent = m.nome || "Meta da secção";
-    body.innerHTML = `
-      <div class="meta-nums"><span><b class="money">${esc(chf0.format(Math.max(0, saldo)))}</b> de <span class="money">${esc(chf0.format(m.valor))}</span></span><span class="money">${Math.round(pct)}%</span></div>
-      <div class="meta-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}"><div style="width:${pct}%"></div></div>
-      <p class="sub" style="margin:0">${falta > 0 ? `Faltam <b class="money">${esc(chf0.format(falta))}</b>${m.data ? ` até ${esc(fmtDate(m.data))}` : ""}. ${ritmo}` : "Meta atingida! Bom trabalho, secção."}</p>`;
-  }
-  const s = Math.max(0, saldo);
-  $("fun").innerHTML = [[int.format(s / 1.6), "pacotes de esparguete"], [int.format(s / 6.9), "cartuchos de gás de campismo"], [int.format(s / 38), "noites de acampamento para um explorador"]]
+  const ym = yearMovs(), by = {};
+  ym.forEach(m => { const k = m.atividade || ""; if (!k) return; (by[k] ||= 0); by[k] += (m.tipo === "receita" ? 1 : -1) * m.valor; });
+  const rows = Object.entries(by).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 7);
+  $("ativSub").textContent = `Resultado em ${anoLabel(S.year)}`;
+  $("ativList").innerHTML = rows.length ? rows.map(([k, v]) => `<li><span>${esc(k)}</span><span class="money ${v >= 0 ? "pos" : ""}">${v >= 0 ? "+" : "−"} ${esc(chf0.format(Math.abs(v)))}</span></li>`).join("")
+    : `<li class="empty" style="display:block">Ainda não há movimentos com atividade preenchida.</li>`;
+  const s = Math.max(0, saldoAtual());
+  $("fun").innerHTML = [[int.format(s / 1.6), "pacotes de esparguete"], [int.format(s / 8), "noites em albergue no Caminho"], [int.format(s / 140), "voos Genebra–Santiago"]]
     .map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join("");
 }
 
