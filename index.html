@@ -222,6 +222,12 @@ a.btn { display: inline-block; text-decoration: none; }
 .top-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-top: 10px; font-size: .85rem; opacity: .85; }
 .top-meta button { background: none; border: 1px solid rgba(255,255,255,.4); color: var(--forest-ink); border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: .8rem; }
 .banner.err { border-color: var(--bad); background: transparent; color: var(--forest-ink); }
+.drop { display: block; }
+:root { --btn-ink: #ffffff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --btn-ink: #0d2315; } }
+:root[data-theme="dark"] { --btn-ink: #0d2315; }
+.btn:not(.ghost):not(.danger) { color: var(--btn-ink); }
+.seg button[aria-pressed="true"] { color: var(--btn-ink); }
 .brand { display: flex; gap: 14px; align-items: center; }
 .fleur { width: clamp(46px, 10vw, 68px); height: auto; flex: none; color: var(--forest-ink); }
 .kpis { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); }
@@ -320,6 +326,21 @@ a.btn { display: inline-block; text-decoration: none; }
     <div class="budget" id="budget"></div>
   </section>
 
+  <section class="panel" id="askPanel" hidden>
+    <div class="panel-head"><h2>Pergunta às contas</h2><span class="sub">Uma inteligência artificial lê as contas e responde.</span></div>
+    <div class="chips" id="askChips">
+      <button type="button">Quanto já juntámos para Santiago?</button>
+      <button type="button">Quanto gastámos em transportes este ano?</button>
+      <button type="button">Qual foi a atividade mais cara?</button>
+      <button type="button">Resume as contas em 3 frases para os pais</button>
+    </div>
+    <form class="ask" id="askForm">
+      <input id="askInput" maxlength="300" placeholder="Ex.: quanto rendeu a venda de rifas?" aria-label="Pergunta">
+      <button class="btn" id="askBtn">Perguntar</button>
+    </form>
+    <div class="answer" id="answer" hidden></div>
+  </section>
+
   <section class="panel">
     <div class="panel-head"><h2>Movimentos</h2><span class="sub" id="movCount"></span></div>
     <div class="filters">
@@ -348,19 +369,44 @@ a.btn { display: inline-block; text-decoration: none; }
     </div>
   </section>
 
-  <footer>Valores em francos suíços (CHF). O ano escutista vai de 1 de setembro a 31 de agosto.</footer>
+  <section class="panel" id="tesPanel" hidden>
+    <div class="panel-head"><h2>Área do tesoureiro</h2><button type="button" class="linkish" id="tesSair">Sair</button></div>
+    <div id="tesLogin">
+      <form class="ask" id="pinForm">
+        <input id="pinInput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN do tesoureiro" aria-label="PIN do tesoureiro">
+        <button class="btn">Entrar</button>
+      </form>
+      <span class="status" id="pinStatus"></span>
+    </div>
+    <div id="tesBody" hidden>
+      <label class="drop" for="talaoFile" id="talaoDrop">📸 Tirar foto ao talão<br><span class="sub">A inteligência artificial lê a data, o valor e a loja e preenche o formulário.</span></label>
+      <input type="file" id="talaoFile" accept="image/*" capture="environment" hidden>
+      <span class="status" id="talaoStatus"></span>
+      <form class="form" id="movForm" style="margin-top:14px">
+        <div class="f"><label for="mTipo">Tipo</label><select id="mTipo"><option>Saída</option><option>Entrada</option></select></div>
+        <div class="f"><label for="mData">Data</label><input id="mData" type="date" required></div>
+        <div class="f"><label for="mVal">Valor (CHF)</label><input id="mVal" type="number" inputmode="decimal" step="0.05" min="0" required></div>
+        <div class="f"><label for="mCat">Categoria</label><select id="mCat"></select></div>
+        <div class="f w2"><label for="mDesc">Descrição</label><input id="mDesc" required maxlength="140" placeholder="Ex.: Compras Coop para o raid"></div>
+        <div class="f w2"><label for="mAtiv">Atividade (opcional)</label><input id="mAtiv" maxlength="80" placeholder="Ex.: Viagem a Santiago"></div>
+        <input type="hidden" id="mTalao">
+        <div class="form-actions"><button class="btn" id="movSave">Guardar na folha</button><span class="status" id="movStatus"></span></div>
+      </form>
+    </div>
+  </section>
+
+  <footer>Valores em francos suíços (CHF). O ano escutista vai de 1 de setembro a 31 de agosto. <button type="button" class="linkish" id="tesOpen" hidden>Área do tesoureiro</button></footer>
 </main>
 </div>
 
 <script>
 /* ============================================================
    CONFIGURAÇÃO — é só isto que precisas de mudar.
-   Cola aqui o ID da tua folha do Google Sheets. O ID é a parte
-   do link entre "/d/" e "/edit":
-   https://docs.google.com/spreadsheets/d/  ESTE_BOCADO  /edit
+   Cola aqui o URL da "Aplicação web" do Apps Script da folha
+   (termina em /exec). Vê o README, passo 3.
    Enquanto estiver vazio, o site mostra dados de exemplo.
    ============================================================ */
-const SHEET_ID = "";
+const API_URL = "";
 
 (() => {
 const CATS = [
@@ -396,22 +442,7 @@ const fmtDate = d => d ? `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 4)}` :
 
 const S = { movs: [], cfg: {}, year: anoKey(today), q: "", fTipo: "all", fCat: "all", shown: 40 };
 
-/* ---------- leitura da folha do Google ---------- */
-function parseCSV(text) {
-  const rows = []; let row = [], cell = "", q = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (q) {
-      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
-      else cell += ch;
-    } else if (ch === '"') q = true;
-    else if (ch === ",") { row.push(cell); cell = ""; }
-    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
-    else cell += ch;
-  }
-  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
-  return rows.filter(r => r.some(c => c.trim() !== ""));
-}
+/* ---------- leitura das contas (Apps Script) ---------- */
 const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 function toObjects(rows) {
   if (!rows.length) return [];
@@ -445,17 +476,20 @@ function catFrom(txt, tipo) {
   return c ? c.id : (tipo === "receita" ? "outros_r" : "outros");
 }
 
-async function fetchTab(name) {
-  const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SHEET_ID)}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(name)}&_=${Date.now()}`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error("http " + r.status);
-  const text = await r.text();
-  if (/^\s*</.test(text)) throw new Error("not csv");
-  return toObjects(parseCSV(text));
-}
 
-async function loadSheet() {
-  const [movs, defs, orc] = await Promise.all([fetchTab("Movimentos"), fetchTab("Definições").catch(() => []), fetchTab("Orçamento").catch(() => [])]);
+async function api(body) {
+  const opts = body ? { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) } : {};
+  const r = await fetch(API_URL, opts);
+  const j = await r.json();
+  if (!j.ok && j.erro) throw new Error(j.erro);
+  return j;
+}
+async function loadApi() {
+  const j = await api();
+  const rows = t => toObjects((t || []).map(r => r.map(v => String(v ?? ""))));
+  applyTabs(rows(j.movimentos), rows(j.definicoes), rows(j.orcamento));
+}
+function applyTabs(movs, defs, orc) {
   S.movs = movs.map(o => {
     const data = parseDate(pick(o, "data"));
     let valor = parseNum(pick(o, "valor"));
@@ -482,7 +516,7 @@ async function loadSheet() {
   });
 }
 
-/* ---------- dados de exemplo (só quando SHEET_ID está vazio) ---------- */
+/* ---------- dados de exemplo (só quando API_URL está vazio) ---------- */
 function loadExample() {
   const R = [
     ["2025-09-13","receita","quotas","Quotas de secção, 1.º trimestre (22 exploradores)",990,"Abertura do ano"],["2025-09-14","despesa","atividades","Inscrição no acampamento regional",420,"Acampamento regional"],
@@ -712,26 +746,104 @@ $("exportBtn").onclick = () => {
 
 async function boot() {
   const banner = $("banner");
-  if (!SHEET_ID) {
+  if (!API_URL) {
     loadExample();
     banner.hidden = false; banner.className = "banner";
     banner.innerHTML = `<span><b>Dados de exemplo.</b> Estes números são fictícios. O site passa a mostrar as contas verdadeiras quando o tesoureiro ligar a folha do Google.</span>`;
     $("updated").textContent = "Modo de exemplo";
   } else {
-    $("updated").textContent = "A ler a folha do Google…";
+    $("updated").textContent = "A ler as contas…";
     try {
-      await loadSheet();
+      await loadApi();
       banner.hidden = true;
-      $("updated").textContent = `Contas lidas da folha às ${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;
+      $("updated").textContent = `Contas atualizadas às ${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;
     } catch (e) {
       banner.hidden = false; banner.className = "banner err";
-      banner.innerHTML = `<span><b>Não consegui ler as contas.</b> Confirma que a folha do Google está partilhada como "Qualquer pessoa com o link pode ver" e que tem uma aba chamada "Movimentos".</span>`;
-      $("updated").textContent = "Sem ligação à folha";
+      banner.innerHTML = `<span><b>Não consegui ler as contas.</b> Verifica a ligação à internet e carrega em Atualizar. Se continuar, avisa o tesoureiro.</span>`;
+      $("updated").textContent = "Sem ligação às contas";
     }
   }
   render();
 }
 $("reload").onclick = boot;
+
+/* ---------- pergunta às contas ---------- */
+async function ask(q) {
+  const out = $("answer"); out.hidden = false; out.textContent = "A pensar…"; $("askBtn").disabled = true;
+  try { out.textContent = (await api({ acao: "pergunta", pergunta: q })).resposta || "Não obtive resposta."; }
+  catch (e) { out.textContent = e.message || "Não consegui responder agora. Tenta daqui a pouco."; }
+  $("askBtn").disabled = false;
+}
+$("askForm").onsubmit = e => { e.preventDefault(); const q = $("askInput").value.trim(); if (q) ask(q); };
+$("askChips").onclick = e => { const b = e.target.closest("button"); if (b) { $("askInput").value = b.textContent; ask(b.textContent); } };
+
+/* ---------- área do tesoureiro ---------- */
+const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
+let PIN = store.get("tes_pin");
+function fillCats() {
+  const tipo = $("mTipo").value === "Entrada" ? "receita" : "despesa", cur = $("mCat").value;
+  $("mCat").innerHTML = CATS.filter(c => c.tipo === tipo).map(c => `<option>${esc(c.nome)}</option>`).join("");
+  if ([...$("mCat").options].some(o => o.value === cur)) $("mCat").value = cur;
+}
+$("mTipo").onchange = fillCats;
+function showTes(open) {
+  $("tesPanel").hidden = !open;
+  $("tesLogin").hidden = !!PIN; $("tesBody").hidden = !PIN;
+  if (open) { $("mData").value ||= today; fillCats(); $("tesPanel").scrollIntoView({ behavior: "smooth" }); }
+}
+$("tesOpen").onclick = () => showTes(true);
+$("tesSair").onclick = () => { PIN = null; store.set("tes_pin", null); showTes(false); };
+$("pinForm").onsubmit = async e => {
+  e.preventDefault();
+  const st = $("pinStatus"); st.className = "status"; st.textContent = "A confirmar…";
+  try {
+    const r = await api({ acao: "pin", pin: $("pinInput").value });
+    if (!r.ok) { st.className = "status err"; st.textContent = "PIN errado."; return; }
+    PIN = $("pinInput").value; store.set("tes_pin", PIN); $("pinInput").value = ""; st.textContent = ""; showTes(true);
+  } catch (err) { st.className = "status err"; st.textContent = err.message; }
+};
+function toJpegBase64(file) {
+  return new Promise((ok, fail) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      ok(c.toDataURL("image/jpeg", 0.82).split(",")[1]);
+    };
+    img.onerror = () => fail(new Error("Não consegui abrir essa imagem. Tenta com uma foto JPG ou PNG."));
+    img.src = url;
+  });
+}
+$("talaoFile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const st = $("talaoStatus"); st.className = "status"; st.textContent = "A ler o talão… (uns 10 segundos)";
+  try {
+    const r = await api({ acao: "talao", pin: PIN, imagem: await toJpegBase64(f), mime: "image/jpeg" });
+    const t = r.talao || {};
+    $("mTipo").value = t.tipo === "Entrada" ? "Entrada" : "Saída"; fillCats();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(t.data || "")) $("mData").value = t.data;
+    if (Number(t.valor) > 0) $("mVal").value = Number(t.valor);
+    if (t.descricao) $("mDesc").value = t.descricao;
+    if ([...$("mCat").options].some(o => o.value === t.categoria)) $("mCat").value = t.categoria;
+    $("mTalao").value = r.link || "";
+    st.textContent = `Lido${r.link ? " e guardado no Google Drive" : ""}. Confirma os dados e carrega em "Guardar na folha".`;
+  } catch (err) { st.className = "status err"; st.textContent = err.message; if (/PIN/.test(err.message)) { PIN = null; store.set("tes_pin", null); showTes(true); } }
+  e.target.value = "";
+};
+$("movForm").onsubmit = async e => {
+  e.preventDefault();
+  const st = $("movStatus"); st.className = "status"; st.textContent = "A guardar…"; $("movSave").disabled = true;
+  const m = { tipo: $("mTipo").value, data: $("mData").value, valor: Math.round(parseFloat($("mVal").value) * 100) / 100, categoria: $("mCat").value, descricao: $("mDesc").value.trim(), atividade: $("mAtiv").value.trim(), talao: $("mTalao").value };
+  try {
+    await api({ acao: "adicionar", pin: PIN, movimento: m });
+    st.textContent = `Guardado: ${m.descricao}, ${chf.format(m.valor)}.`;
+    ["mVal", "mDesc", "mAtiv", "mTalao"].forEach(id => $(id).value = ""); $("talaoStatus").textContent = "";
+    boot();
+  } catch (err) { st.className = "status err"; st.textContent = err.message; }
+  $("movSave").disabled = false;
+};
+if (API_URL) { $("askPanel").hidden = false; $("tesOpen").hidden = false; }
 let rz; let lastW = innerWidth;
 addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; renderMonths(); } }, 150); });
 boot();
