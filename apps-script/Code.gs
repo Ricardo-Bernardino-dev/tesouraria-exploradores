@@ -9,7 +9,7 @@
  * Em Definições do projeto → Propriedades do script, cria:
  *   GEMINI_API_KEY  a chave grátis do Google AI Studio
  *   PIN             o código do tesoureiro (ex.: 6 algarismos)
- *   GEMINI_MODEL    (opcional) força um modelo; sem isto, o script escolhe o Flash mais recente
+ *   GEMINI_MODEL    (opcional) o modelo preferido, ex.: gemini-3.8-flash; sem isto, o script escolhe sozinho
  *
  * O que faz:
  *   GET               devolve as contas (sem links de talões) para o site mostrar
@@ -87,7 +87,8 @@ function adicionar_(m) {
 /* ---------------- Gemini ---------------- */
 
 /**
- * Lista de modelos a tentar, do melhor para o pior. Se GEMINI_MODEL estiver definido, usa só esse.
+ * Lista de modelos a tentar, do melhor para o pior. Se GEMINI_MODEL estiver definido, é o primeiro
+ * a tentar (para as perguntas e para os talões); os outros ficam de reserva se ele estiver ocupado.
  * Senão pergunta à Google que modelos existem para esta chave (a Google muda os nomes com
  * frequência) e ordena os "Flash", pondo primeiro o último que funcionou.
  * rapido = true prefere os "Flash-Lite" (respondem mais depressa; bons para perguntas).
@@ -95,8 +96,7 @@ function adicionar_(m) {
  */
 function candidatos_(key, rapido) {
   const props = PropertiesService.getScriptProperties();
-  const fixo = props.getProperty("GEMINI_MODEL");
-  if (fixo) return [fixo];
+  const fixo = String(props.getProperty("GEMINI_MODEL") || "").trim().replace(/^models\//, "");
   const cache = CacheService.getScriptCache();
   let nomes = JSON.parse(cache.get("gemini_modelos_v2") || "null");
   if (!nomes) {
@@ -121,6 +121,7 @@ function candidatos_(key, rapido) {
   let lista = nomes.slice().sort((a, b) => pontos(b) - pontos(a)).slice(0, 6);
   const ultimo = props.getProperty(rapido ? "GEMINI_MODEL_RAPIDO" : "GEMINI_MODEL_AUTO");
   if (ultimo && lista.indexOf(ultimo) > -1) lista = [ultimo].concat(lista.filter(n => n !== ultimo));
+  if (fixo) lista = [fixo].concat(lista.filter(n => n !== fixo));
   return lista;
 }
 
@@ -151,6 +152,7 @@ function gemini_(parts, comoJson, rapido) {
   }
   if (code === 429) throw new Error("O Gemini atingiu o limite gratuito. Tenta daqui a uns minutos.");
   if (code === 503 || code === 500) throw new Error("O Gemini está sobrecarregado neste momento. Tenta daqui a um minuto.");
+  if (code === 404) throw new Error("Modelo Gemini não encontrado (" + tentados.join(", ") + "). Confirma o nome em GEMINI_MODEL ou apaga essa propriedade.");
   if (code !== 200) throw new Error("O Gemini não respondeu (" + code + ", modelos tentados: " + tentados.join(", ") + ").");
   const out = JSON.parse(res.getContentText());
   const txt = (((out.candidates || [])[0] || {}).content || {}).parts;
