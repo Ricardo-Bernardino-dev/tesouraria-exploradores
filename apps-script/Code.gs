@@ -5,7 +5,7 @@
  * Em Definições do projeto → Propriedades do script, cria:
  *   GEMINI_API_KEY  a chave grátis do Google AI Studio
  *   PIN             o código do tesoureiro (ex.: 6 algarismos)
- *   GEMINI_MODEL    (opcional) por defeito "gemini-2.5-flash"
+ *   GEMINI_MODEL    (opcional) força um modelo; sem isto, o script escolhe o Flash mais recente
  *
  * O que faz:
  *   GET               devolve as contas (sem links de talões) para o site mostrar
@@ -82,12 +82,42 @@ function adicionar_(m) {
 
 /* ---------------- Gemini ---------------- */
 
+/**
+ * Escolhe o modelo: GEMINI_MODEL se estiver definido; senão pergunta à Google que modelos
+ * existem e escolhe o "Flash" mais recente (a Google muda os nomes com frequência).
+ */
+function modelo_(key, procurarDeNovo) {
+  const props = PropertiesService.getScriptProperties();
+  const fixo = props.getProperty("GEMINI_MODEL");
+  if (fixo) return fixo;
+  const guardado = props.getProperty("GEMINI_MODEL_AUTO");
+  if (guardado && !procurarDeNovo) return guardado;
+  const res = UrlFetchApp.fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", {
+    headers: { "x-goog-api-key": key }, muteHttpExceptions: true,
+  });
+  if (res.getResponseCode() !== 200) throw new Error("Não consegui ver os modelos do Gemini (" + res.getResponseCode() + "). Confirma a chave GEMINI_API_KEY.");
+  const nomes = (JSON.parse(res.getContentText()).models || [])
+    .filter(m => (m.supportedGenerationMethods || []).indexOf("generateContent") > -1)
+    .map(m => String(m.name).replace(/^models\//, ""));
+  const pontos = n => {
+    if (!/flash/.test(n) || /(image|tts|audio|live|embedding|thinking|exp|8b)/.test(n)) return -1;
+    let p = parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || "0") * 10;
+    if (/lite/.test(n)) p -= 3;
+    if (/preview/.test(n)) p -= 2;
+    if (/latest/.test(n)) p += 1;
+    return p;
+  };
+  const melhor = nomes.filter(n => pontos(n) >= 0).sort((a, b) => pontos(b) - pontos(a))[0];
+  if (!melhor) throw new Error("Não encontrei nenhum modelo Gemini Flash disponível para esta chave.");
+  props.setProperty("GEMINI_MODEL_AUTO", melhor);
+  return melhor;
+}
+
 function gemini_(parts, comoJson) {
   const props = PropertiesService.getScriptProperties();
   const key = props.getProperty("GEMINI_API_KEY");
   if (!key) throw new Error("Falta a chave do Gemini nas propriedades do script.");
-  const modelo = props.getProperty("GEMINI_MODEL") || "gemini-2.5-flash";
-  const res = UrlFetchApp.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+  const chamar = modelo => UrlFetchApp.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
     method: "post",
     contentType: "application/json",
     headers: { "x-goog-api-key": key },
@@ -97,8 +127,11 @@ function gemini_(parts, comoJson) {
       generationConfig: comoJson ? { responseMimeType: "application/json", temperature: 0.1 } : { temperature: 0.4 },
     }),
   });
+  let res = chamar(modelo_(key, false));
+  if (res.getResponseCode() === 404 && !props.getProperty("GEMINI_MODEL")) res = chamar(modelo_(key, true));
   const code = res.getResponseCode();
   if (code === 429) throw new Error("O Gemini atingiu o limite gratuito. Tenta daqui a uns minutos.");
+  if (code === 404) throw new Error("O modelo Gemini não existe. Apaga a propriedade GEMINI_MODEL para o script escolher sozinho.");
   if (code !== 200) throw new Error("O Gemini não respondeu (" + code + ").");
   const out = JSON.parse(res.getContentText());
   const txt = (((out.candidates || [])[0] || {}).content || {}).parts;
@@ -194,5 +227,7 @@ function json_(o) {
 /** Corre esta função uma vez no editor para autorizar o script e testar a chave. */
 function testar() {
   Logger.log(JSON.stringify(lerContas_(false)).slice(0, 500));
-  Logger.log(gemini_([{ text: "Responde só: olá escuteiros!" }], false));
+  Logger.log("Resposta do Gemini: " + gemini_([{ text: "Responde só: olá escuteiros!" }], false));
+  const p = PropertiesService.getScriptProperties();
+  Logger.log("Modelo usado: " + (p.getProperty("GEMINI_MODEL") || p.getProperty("GEMINI_MODEL_AUTO")));
 }
