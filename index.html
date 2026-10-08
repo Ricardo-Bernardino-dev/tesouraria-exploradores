@@ -416,7 +416,7 @@ a.btn { display: inline-block; text-decoration: none; }
   </section>
 
   <section class="panel" id="askPanel" hidden>
-    <div class="panel-head"><h2>Pergunta às contas</h2><span class="sub">Uma inteligência artificial lê as contas e responde.</span></div>
+    <div class="panel-head"><h2>Pergunta à Bússola 🧭</h2><span class="sub">A Bússola é uma inteligência artificial que lê as contas da secção e responde.</span></div>
     <div class="chips" id="askChips">
       <button type="button">Quanto já juntámos para Santiago?</button>
       <button type="button">Quantos dias faltam para Santiago e quanto temos de juntar por mês?</button>
@@ -591,7 +591,9 @@ function catFrom(txt, tipo) {
 
 async function api(body) {
   const opts = body ? { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) } : {};
-  const r = await fetch(API_URL, opts);
+  let r;
+  try { r = await fetch(API_URL, opts); }
+  catch { throw new Error("Perdemos o sinal no meio da serra 📶 Verifica a internet e tenta outra vez."); }
   const j = await r.json();
   if (!j.ok && j.erro) throw new Error(j.erro);
   return j;
@@ -901,9 +903,9 @@ $("reload").onclick = boot;
 
 /* ---------- pergunta às contas ---------- */
 async function ask(q) {
-  const out = $("answer"); out.hidden = false; out.textContent = "A pensar…"; $("askBtn").disabled = true;
-  try { out.textContent = (await api({ acao: "pergunta", pergunta: q })).resposta || "Não obtive resposta."; }
-  catch (e) { out.textContent = e.message || "Não consegui responder agora. Tenta daqui a pouco."; }
+  const out = $("answer"); out.hidden = false; out.textContent = "A Bússola está a ler o mapa… 🧭"; $("askBtn").disabled = true;
+  try { out.textContent = (await api({ acao: "pergunta", pergunta: q })).resposta || "A Bússola ficou sem palavras. Tenta perguntar de outra forma."; }
+  catch (e) { out.textContent = e.message || "A Bússola não conseguiu responder agora. Tenta daqui a pouco."; }
   $("askBtn").disabled = false;
 }
 $("askForm").onsubmit = e => { e.preventDefault(); const q = $("askInput").value.trim(); if (q) ask(q); };
@@ -930,7 +932,7 @@ $("pinForm").onsubmit = async e => {
   const st = $("pinStatus"); st.className = "status"; st.textContent = "A confirmar…";
   try {
     const r = await api({ acao: "pin", pin: $("pinInput").value });
-    if (!r.ok) { st.className = "status err"; st.textContent = "PIN errado."; return; }
+    if (!r.ok) { st.className = "status err"; st.textContent = "PIN errado. Só o tesoureiro passa nesta porta! 🔐"; return; }
     PIN = $("pinInput").value; store.set("tes_pin", PIN); $("pinInput").value = ""; st.textContent = ""; showTes(true);
   } catch (err) { st.className = "status err"; st.textContent = err.message; }
 };
@@ -949,7 +951,7 @@ function toJpegBase64(file) {
 }
 $("talaoFile").onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
-  const st = $("talaoStatus"); st.className = "status"; st.textContent = "A ler o talão… (uns 10 segundos)";
+  const st = $("talaoStatus"); st.className = "status"; st.textContent = "A decifrar o talão… 🔎";
   try {
     const r = await api({ acao: "talao", pin: PIN, imagem: await toJpegBase64(f), mime: "image/jpeg" });
     const t = r.talao || {};
