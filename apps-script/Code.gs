@@ -22,6 +22,9 @@
 const ABAS = { mov: "Movimentos", def: "Definições", orc: "Orçamento", cat: "Categorias" };
 const PASTA_TALOES = "Talões — Tesouraria Exploradores";
 const LIMITE_PERGUNTAS_HORA = 40;
+// true: talões lidos com o modelo Lite (~1 s, e tu confirmas sempre os valores antes de guardar).
+// false: Flash completo (mais lento, eventualmente mais preciso). Muda se o Lite ler mal os talões.
+const TALOES_RAPIDO = true;
 const LIMITE_PERGUNTAS_DIA = 250;
 
 /* ---------------- entrada ---------------- */
@@ -202,7 +205,7 @@ Responde só com JSON neste formato:
 - Se a data não for legível, usa ${hoje}.
 - categoria: escolhe a mais provável desta lista (Tipo: Categoria):
 ${lista}`;
-  const txt = gemini_([{ text: prompt }, { inline_data: { mime_type: mime, data: b64 } }], true, false);
+  const txt = gemini_([{ text: prompt }, { inline_data: { mime_type: mime, data: b64 } }], true, TALOES_RAPIDO);
   let dados;
   try { dados = JSON.parse(txt.replace(/^```(json)?|```$/g, "")); } catch (e) { throw new Error("Não consegui ler o talão. Tenta uma foto mais nítida."); }
   let link = "";
@@ -253,6 +256,6 @@ function testar() {
   Logger.log("Perguntas (rápido): " + gemini_([{ text: "Responde só: olá escuteiros!" }], false, true) +
     " — " + p.getProperty("GEMINI_MODEL_RAPIDO") + ", " + ((Date.now() - t) / 1000).toFixed(1) + " s");
   t = Date.now();
-  Logger.log("Talões (preciso): " + gemini_([{ text: "Responde só: olá escuteiros!" }], false, false) +
-    " — " + p.getProperty("GEMINI_MODEL_AUTO") + ", " + ((Date.now() - t) / 1000).toFixed(1) + " s");
+  Logger.log("Talões: " + gemini_([{ text: "Responde só: olá escuteiros!" }], false, TALOES_RAPIDO) +
+    " — " + p.getProperty(TALOES_RAPIDO ? "GEMINI_MODEL_RAPIDO" : "GEMINI_MODEL_AUTO") + ", " + ((Date.now() - t) / 1000).toFixed(1) + " s");
 }
