@@ -1,4 +1,8 @@
 /**
+ * @OnlyCurrentDoc  O script só pode mexer nesta folha, em mais nenhuma do teu Drive.
+ */
+
+/**
  * Tesouraria dos Exploradores 1308 — "cérebro" do site.
  *
  * Cola este ficheiro em Extensões → Apps Script, na folha da tesouraria.
